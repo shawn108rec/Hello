@@ -1,0 +1,232 @@
+
+import java.io.*;
+import java.util.*;
+
+public class EmployeeManager {
+
+    public static void main(String[] args) {
+
+        // Task 2: Check the number of arguments
+        if (args.length != 1) {
+            System.out.println("Error: Please provide exactly one argument.");
+            return;
+        }
+
+        String command = args[0];
+
+        try {
+
+            // Task 0: Load all employees
+            if (command.equals(Constants.LOAD)) {
+
+                System.out.println("Loading data ...");
+
+                List<String> employees = readEmployees();
+
+                for (String employee : employees) {
+                    System.out.println(employee);
+                }
+
+                System.out.println("Data Loaded.");
+
+            }
+
+            // Task 0: Select a random employee
+            else if (command.equals(Constants.RANDOM)) {
+
+                System.out.println("Loading data ...");
+
+                List<String> employees = readEmployees();
+
+                if (employees.isEmpty()) {
+                    System.out.println("No employees found.");
+                } else {
+                    Random random = new Random();
+
+                    int index = random.nextInt(employees.size());
+
+                    System.out.println(employees.get(index));
+                }
+
+                System.out.println("Data Loaded.");
+
+            }
+
+            // Task 0: Add a new employee
+            else if (command.startsWith("+") && command.length() > 1) {
+
+                System.out.println("Loading data ...");
+
+                String newEmployee = command.substring(1).trim();
+
+                List<String> employees = readEmployees();
+
+                employees.add(newEmployee);
+
+                writeEmployees(employees);
+
+                System.out.println("Data Loaded.");
+
+            }
+
+            // Task 0: Search for an employee
+            // Task 7: Remove unnecessary control-flow variable
+            else if (command.startsWith("?") && command.length() > 1) {
+
+                System.out.println("Loading data ...");
+
+                String searchName = command.substring(1).trim();
+
+                List<String> employees = readEmployees();
+
+                if (employees.contains(searchName)) {
+                    System.out.println("Employee found!");
+                } else {
+                    System.out.println("Employee not found!");
+                }
+
+                System.out.println("Data Loaded.");
+
+            }
+
+            // Task 0: Count words and characters
+            // Task 8: Simplify word counting
+            else if (command.equals(Constants.COUNT)) {
+
+                System.out.println("Loading data ...");
+
+                String fileContent = readFileContent();
+
+                int wordCount = 0;
+
+                if (!fileContent.trim().isEmpty()) {
+                    wordCount = fileContent.trim().split("\\s+").length;
+                }
+
+                System.out.println(
+                    wordCount + " word(s) found "
+                    + fileContent.length() + " characters"
+                );
+
+                System.out.println("Data Loaded.");
+
+            }
+
+            // Task 0: Update an employee
+            else if (command.startsWith("u") && command.length() > 1) {
+
+                System.out.println("Loading data ...");
+
+                String employeeName = command.substring(1).trim();
+
+                List<String> employees = readEmployees();
+
+                if (employees.contains(employeeName)) {
+
+                    int index = employees.indexOf(employeeName);
+
+                    employees.set(index, "Updated");
+
+                    writeEmployees(employees);
+
+                    System.out.println("Employee Updated.");
+
+                } else {
+                    System.out.println("Employee not found!");
+                }
+
+                System.out.println("Data Updated.");
+
+            }
+
+            // Task 0: Delete an employee
+            else if (command.startsWith("d") && command.length() > 1) {
+
+                System.out.println("Loading data ...");
+
+                String employeeName = command.substring(1).trim();
+
+                List<String> employees = readEmployees();
+
+                if (employees.remove(employeeName)) {
+
+                    writeEmployees(employees);
+
+                    System.out.println("Employee Deleted.");
+
+                } else {
+                    System.out.println("Employee not found!");
+                }
+
+                System.out.println("Data Deleted.");
+
+            }
+
+            // Task 9: Handle invalid arguments
+            else {
+                System.out.println("Invalid command!");
+                System.out.println("Available commands:");
+                System.out.println("l, s, +name, ?name, c, uname, dname");
+            }
+
+        } catch (IOException e) {
+
+            System.out.println("File Error: " + e.getMessage());
+
+        }
+    }
+
+    // Task 4: Read file content
+    public static String readFileContent() throws IOException {
+
+        StringBuilder content = new StringBuilder();
+
+        try (BufferedReader reader = new BufferedReader(
+                new FileReader(Constants.FILE_NAME))) {
+
+            String line;
+
+            while ((line = reader.readLine()) != null) {
+                if (content.length() > 0) {
+                    content.append("\n");
+                }
+
+                content.append(line);
+            }
+        }
+
+        return content.toString();
+    }
+
+    // Read employee names from file
+    public static List<String> readEmployees() throws IOException {
+
+        String content = readFileContent();
+
+        List<String> employees = new ArrayList<>();
+
+        if (!content.trim().isEmpty()) {
+
+            String[] employeeArray = content.split(",");
+
+            for (String employee : employeeArray) {
+                if (!employee.trim().isEmpty()) {
+                    employees.add(employee.trim());
+                }
+            }
+        }
+
+        return employees;
+    }
+
+    // Task 4: Write employee names to file
+    public static void writeEmployees(List<String> employees)
+            throws IOException {
+
+        try (BufferedWriter writer = new BufferedWriter(
+                new FileWriter(Constants.FILE_NAME))) {
+
+            writer.write(String.join(",", employees));
+        }
+    }
+}
